@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Percepta Concept · Gaurav Basantani</title>
+<meta name="description" content="Check one shift before Nightingale's schedule posts: a made-up nurse manager reviews a drafted January schedule where one nurse's class was written in a note, not her availability. An unofficial concept by Gaurav Basantani.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap">
+<style>
+/* One screen, one decision: a made-up nurse manager reviews the January night schedule that
+   Nightingale (Percepta's nurse scheduling system) drafted for her unit. One nurse wrote her class
+   ("no Mondays or Wednesdays Jan 4 to 24") in a request note instead of changing her availability,
+   so every staffing rule passes with her on Wed Jan 6. Nightingale reads the note and asks instead
+   of guessing. The manager swaps the night with one tap, or keeps it with a reason. */
+:root{
+  --bg:#fafafa; --page-ink:#0a0a0a; --page-muted:#6b6b70; --ok:#1f7a3f; --bad:#b42318;
+  --w-bg:#ffffff; --w-2:#f6f6f7; --w-line:#e5e5e7; --w-ink:#0a0a0a; --w-muted:#66666c; --w-dim:#a1a1a7;
+  --vi:#6a4fc4; --vi-soft:#f2eefc; --vi-line:#cdbff2; --hatch:#ece6fb;
+  --btn:#0a0a0a; --btn-ink:#ffffff;
+  --chip-bg:#f2f2f3; --chip-line:#dcdcdf; --shift:#0a0a0a; --shift-ink:#ffffff;
+  --sans:"Geist",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"Geist Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0b0b0c; --page-ink:#f2f2f3; --page-muted:#a3a3a9; --ok:#6fd394; --bad:#ff8a80;
+  --w-bg:#151516; --w-2:#1c1c1e; --w-line:#2e2e31; --w-ink:#f2f2f3; --w-muted:#aaaab0; --w-dim:#76767c;
+  --vi:#b39dff; --vi-soft:#231d38; --vi-line:#4c3d86; --hatch:#211c33;
+  --btn:#f2f2f3; --btn-ink:#0a0a0a;
+  --chip-bg:#222224; --chip-line:#3a3a3e; --shift:#e9e9ec; --shift-ink:#0a0a0a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0b0b0c; --page-ink:#f2f2f3; --page-muted:#a3a3a9; --ok:#6fd394; --bad:#ff8a80;
+  --w-bg:#151516; --w-2:#1c1c1e; --w-line:#2e2e31; --w-ink:#f2f2f3; --w-muted:#aaaab0; --w-dim:#76767c;
+  --vi:#b39dff; --vi-soft:#231d38; --vi-line:#4c3d86; --hatch:#211c33;
+  --btn:#f2f2f3; --btn-ink:#0a0a0a;
+  --chip-bg:#222224; --chip-line:#3a3a3e; --shift:#e9e9ec; --shift-ink:#0a0a0a; color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--page-ink);font:15px/1.45 var(--sans);padding:18px max(16px,env(safe-area-inset-right,0px)) 24px max(16px,env(safe-area-inset-left,0px))}
+p,h1,h2,h3{margin:0}
+button{font:inherit;color:inherit;cursor:pointer}
+.page{max-width:1080px;margin:0 auto;display:grid;gap:14px}
+.head{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,420px);gap:8px 40px;align-items:end}
+.eyebrow{font:500 .72rem var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--page-muted);margin-bottom:6px}
+h1{font:600 clamp(1.4rem,3vw,2rem)/1.12 var(--sans);letter-spacing:-.02em}
+.now{border-left:3px solid var(--page-muted);padding:2px 0 2px 12px;min-height:40px;display:flex;align-items:center}
+.now.bad{border-color:var(--bad)} .now.ok{border-color:var(--ok)}
+.now p{font-size:.95rem}
+.now.bad p{color:var(--bad)} .now.ok p{color:var(--ok)}
+.now b{font-weight:600}
+/* the app window: quiet generic chrome in the style of percepta.ai (Geist, white, thin grey lines) */
+.window{background:var(--w-bg);color:var(--w-ink);border:1px solid var(--w-line);border-radius:12px;overflow:hidden;display:grid;grid-template-columns:180px minmax(0,1fr)}
+.side{border-right:1px solid var(--w-line);padding:12px 10px;display:grid;align-content:start;gap:2px;cursor:default;background:var(--w-2)}
+.app{display:flex;align-items:center;gap:9px;padding:2px 4px 12px}
+.logo{width:28px;height:28px;border-radius:7px;background:var(--w-ink);color:var(--w-bg);display:grid;place-items:center;font:600 .68rem var(--sans);flex:none}
+.app b{display:block;font-weight:600;font-size:.86rem;line-height:1.2}
+.app .who{display:block;font-size:.74rem;color:var(--w-muted)}
+.nav{font-size:.86rem;padding:6px 8px;border-radius:6px;color:var(--w-muted)}
+.nav.on{background:var(--w-bg);color:var(--w-ink);font-weight:500;box-shadow:0 0 0 1px var(--w-line)}
+.main{min-width:0;display:grid;align-content:start}
+.top{display:flex;align-items:center;gap:10px;padding:12px 20px;border-bottom:1px solid var(--w-line);cursor:default;min-width:0}
+.top .app{display:none;padding:0}
+.crumb{font:400 .74rem var(--mono);color:var(--w-muted);white-space:nowrap}
+.task{padding:14px 20px 4px;cursor:default}
+.task h2{font:600 1.2rem/1.25 var(--sans);letter-spacing:-.01em}
+.task p{font-size:.84rem;color:var(--w-muted);margin-top:2px}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,400px);gap:16px;padding:12px 20px 16px;align-items:start}
+/* calendars */
+.cals{display:grid;gap:12px;cursor:default;min-width:0}
+.cal{border:1px solid var(--w-line);border-radius:10px;overflow:hidden}
+.chh{display:flex;justify-content:space-between;gap:10px;padding:9px 12px;background:var(--w-2);border-bottom:1px solid var(--w-line);font-size:.8rem;color:var(--w-muted)}
+.chh b{color:var(--w-ink);font-weight:500}
+.cg{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;padding:8px 10px 10px}
+.dh{font:500 .68rem var(--mono);color:var(--w-muted);text-align:center;text-transform:uppercase;letter-spacing:.04em;padding:2px 0}
+.dh.no{color:var(--vi)}
+.d{min-height:46px;border:1px solid var(--w-line);border-radius:7px;padding:4px 5px;display:grid;align-content:space-between;gap:3px;font-size:.72rem;color:var(--w-muted);font-variant-numeric:tabular-nums}
+.d.no{background:repeating-linear-gradient(135deg,var(--hatch) 0 5px,transparent 5px 10px);border-color:var(--vi-line)}
+.d .s{display:block;background:var(--shift);color:var(--shift-ink);border-radius:4px;font:500 .66rem var(--sans);text-align:center;padding:2px 0}
+.d.flag{outline:2px solid var(--vi);outline-offset:-1px}
+.d.flag .s{background:var(--vi);color:#fff}
+.d.moved .s{box-shadow:0 0 0 2px var(--ok)}
+.cf{display:flex;justify-content:space-between;gap:10px;padding:0 12px 9px;font-size:.76rem;color:var(--w-muted)}
+.key{display:inline-block;width:11px;height:11px;border-radius:3px;vertical-align:-1px;margin-right:4px;border:1px solid var(--vi-line);background:repeating-linear-gradient(135deg,var(--hatch) 0 3px,transparent 3px 6px)}
+/* Nightingale's check */
+.check{border:1px solid var(--vi-line);background:var(--w-bg);border-radius:10px;padding:12px;display:grid;gap:10px;min-width:0}
+.check.closed{border-color:var(--chip-line)}
+.ck{display:flex;align-items:center;gap:8px;font-weight:600;font-size:.92rem;cursor:default}
+.dot{width:12px;height:12px;border-radius:50%;background:var(--vi);flex:none;box-shadow:0 0 0 3px var(--vi-soft)}
+.ev{display:grid;gap:6px;cursor:default}
+.e{display:grid;grid-template-columns:86px minmax(0,1fr);gap:8px;font-size:.86rem;line-height:1.4}
+.e em{font:400 .72rem var(--mono);font-style:normal;color:var(--w-muted);padding-top:2px;white-space:nowrap}
+mark{background:var(--vi-soft);color:inherit;border-radius:3px;padding:0 3px;box-shadow:inset 0 -1px 0 var(--vi-line)}
+.tag{display:inline-block;font:500 .68rem var(--mono);color:var(--w-muted);border:1px solid var(--chip-line);border-radius:4px;padding:0 5px;margin-left:4px;white-space:nowrap}
+.why{font-size:.84rem;color:var(--w-muted);border-top:1px solid var(--w-line);padding-top:9px;cursor:default}
+.acts{display:flex;flex-wrap:wrap;gap:8px}
+.b1{background:var(--btn);color:var(--btn-ink);border:0;border-radius:8px;padding:9px 14px;font-weight:500;font-size:.9rem}
+.b2{background:var(--w-bg);border:1px solid var(--chip-line);border-radius:8px;padding:8px 13px;font-size:.88rem}
+.b1:disabled{opacity:.45;cursor:not-allowed}
+.b1:focus-visible,.b2:focus-visible,.wf button:focus-visible,textarea:focus-visible{outline:2px solid var(--vi);outline-offset:2px}
+.reason{display:grid;gap:7px}
+.reason label{font-size:.86rem;font-weight:500}
+.reason small{font-size:.76rem;color:var(--w-muted)}
+textarea{font:inherit;font-size:.88rem;color:var(--w-ink);background:var(--w-bg);border:1px solid var(--chip-line);border-radius:8px;padding:8px 10px;min-height:62px;resize:vertical;width:100%}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:.8rem;background:var(--chip-bg);border:1px solid var(--chip-line);border-radius:999px;padding:3px 10px;width:max-content;max-width:100%}
+.done{display:grid;gap:7px;font-size:.86rem;cursor:default}
+.done q{color:var(--w-muted)}
+.wf{display:flex;align-items:center;gap:8px;padding:9px 20px;border-top:1px solid var(--w-line);font-size:.76rem;color:var(--w-muted);grid-column:1/-1}
+.wf span{margin-right:auto}
+.wf button{white-space:nowrap;background:none;border:1px solid var(--chip-line);border-radius:6px;padding:3px 10px;font-size:.78rem;color:var(--w-ink)}
+.wf button:disabled{opacity:.4;cursor:default}
+.foot{font-size:.78rem;color:var(--page-muted);display:flex;flex-wrap:wrap;gap:4px 14px;justify-content:space-between}
+.foot a{color:inherit}
+@media(max-width:860px){
+  body{padding-top:14px}
+  .head{grid-template-columns:1fr;gap:8px}
+  .window{grid-template-columns:1fr}
+  .side{display:none}
+  .top{padding:9px 12px;justify-content:space-between}
+  .top .app{display:flex}
+  .logo{width:26px;height:26px}
+  .task{padding:10px 12px 2px}
+  .task h2{font-size:1.05rem}
+  .grid{grid-template-columns:1fr;padding:8px 12px 12px;gap:12px}
+  .check{order:-1;padding:10px;gap:8px}
+  .cg{gap:3px;padding:7px 8px 9px}
+  .d{min-height:40px;padding:3px}
+  .wf{padding:8px 12px}
+}
+@media(max-width:380px){h1{font-size:1.3rem}.e{grid-template-columns:90px minmax(0,1fr);gap:4px}.b1{padding:9px 11px}.d .s{font-size:.6rem}}
+</style>
+</head>
+<body>
+<main class="page">
+  <header class="head">
+    <div>
+      <p class="eyebrow">Design concept for Percepta · unofficial</p>
+      <h1>Check one shift before Nightingale’s schedule posts</h1>
+    </div>
+    <div class="now" id="now" aria-live="polite"></div>
+  </header>
+
+  <section class="window" aria-label="Concept screen: a nurse manager reviews a night schedule drafted by Nightingale">
+    <nav class="side" aria-hidden="true">
+      <div class="app"><span class="logo">4W</span><span><b>4 West · Nights</b><span class="who">Erin Walsh, nurse manager</span></span></div>
+      <span class="nav on">Schedule</span><span class="nav">Requests</span><span class="nav">Staff</span><span class="nav">Rules</span>
+    </nav>
+    <div class="main">
+      <div class="top"><span class="app"><span class="logo">4W</span><span><b>4 West · Nights</b><span class="who">Erin Walsh, nurse manager</span></span></span><span class="crumb">Schedule › January</span></div>
+      <div class="task"><h2>January night schedule</h2><p id="tasksub">Nightingale drafted it Dec 3. Not posted yet.</p></div>
+      <div class="grid">
+        <div class="cals" id="cals"></div>
+        <div class="check" id="check"></div>
+      </div>
+    </div>
+    <div class="wf"><span>Made-up unit, nurses and note</span><button type="button" id="undo">Undo</button><button type="button" id="reset">Start over</button></div>
+  </section>
+
+  <footer class="foot"><span>By Gaurav Basantani · <a href="https://gauravbasantani.com">gauravbasantani.com</a> · <a href="walkthrough.mp4">35-second walkthrough</a></span><span>Not affiliated with Percepta</span></footer>
+</main>
+
+<script>
+(function(){
+  // January 2027: Mon Jan 4 to Sun Jan 24 is the window in Priya's note (three full weeks).
+  var START = 4, END = 24;            // dates in January 2027; Jan 4 is a Monday
+  var DAYS = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+  var NO = [0,2];                     // Monday and Wednesday columns: Priya's note
+  var FLAG = 6, SWAP = 7;             // Wed Jan 6 (flagged), Thu Jan 7 (Jordan's night, Priya free)
+  var PRIYA = [5,6,9,12,14,16,19,21,23];  // drafted nights, three each week
+  var JORDAN = [4,7,8];                   // drafted nights, week of Jan 4
+  var S0 = {step:"open", reason:""};
+  var s = JSON.parse(JSON.stringify(S0)), hist = [];
+  var $ = function(id){return document.getElementById(id);};
+  function esc(t){return t.replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c];});}
+  function swapped(){return s.step==="fixed";}
+  function priya(){return swapped() ? PRIYA.filter(function(d){return d!==FLAG;}).concat([SWAP]).sort(function(a,b){return a-b;}) : PRIYA;}
+  function jordan(){return swapped() ? JORDAN.filter(function(d){return d!==SWAP;}).concat([FLAG]).sort(function(a,b){return a-b;}) : JORDAN;}
+  function dow(d){return (d-START)%7;}
+  function clash(list){return list.filter(function(d){return NO.indexOf(dow(d))>=0;});}
+  function go(next){hist.push(JSON.parse(JSON.stringify(s))); s=next; render();}
+
+  function grid(list, from, to, shade, who){
+    var h = '<div class="cg">'+DAYS.map(function(n,i){return '<span class="dh'+(shade&&NO.indexOf(i)>=0?' no':'')+'">'+n+'</span>';}).join('');
+    for(var d=from; d<=to; d++){
+      var on = list.indexOf(d)>=0, no = shade && NO.indexOf(dow(d))>=0;
+      var cls = 'd'+(no?' no':'')+(on&&d===FLAG&&who==="p"&&!swapped()?' flag':'')+(on&&swapped()&&((who==="p"&&d===SWAP)||(who==="j"&&d===FLAG))?' moved':'');
+      h += '<span class="'+cls+'"><span>'+d+'</span>'+(on?'<span class="s">Night</span>':'')+'</span>';
+    }
+    return h+'</div>';
+  }
+  function weekCounts(list){
+    var c=[0,0,0]; list.forEach(function(d){c[Math.floor((d-START)/7)]++;}); return c;
+  }
+  function calsHTML(){
+    var p = priya(), j = jordan(), wc = weekCounts(p);
+    var same = wc[0]===wc[1] && wc[1]===wc[2];
+    return '<div class="cal"><div class="chh"><span><b>Priya Shah, RN</b> · nights</span><span>Jan '+START+' to '+END+'</span></div>'+
+      grid(p, START, END, true, "p")+
+      '<div class="cf"><span><i class="key"></i>Her note: no Mondays or Wednesdays</span><span>'+p.length+' nights'+(same?', '+wc[0]+' a week':'')+'</span></div></div>'+
+      '<div class="cal"><div class="chh"><span><b>Jordan Lee, RN</b> · nights</span><span>Jan '+START+' to '+(START+6)+'</span></div>'+
+      grid(j, START, START+6, false, "j")+
+      '<div class="cf"><span>No limits</span><span>'+j.length+' nights</span></div></div>';
+  }
+  function evidence(){
+    return '<div class="ev">'+
+      '<div class="e"><em>Form · Oct 5</em><span>Any night</span></div>'+
+      '<div class="e"><em>Note · Dec 2</em><span>“No <mark>Mondays or Wednesdays</mark> Jan '+START+' to '+END+', I have a class.”<span class="tag">note only</span></span></div>'+
+      '<div class="e"><em>Swap</em><span>Jordan works Thu Jan '+SWAP+' and is free Wed Jan '+FLAG+'</span></div>'+
+      '</div>';
+  }
+  function checkHTML(){
+    var head = '<p class="ck"><span class="dot" aria-hidden="true"></span><span>Nightingale isn’t sure about Priya on Wed Jan '+FLAG+'</span></p>';
+    var why = '<p class="why">Her availability says any night, so every staffing rule passes. Nothing else checks this before the schedule posts.</p>';
+    if(s.step==="open"){
+      return head+evidence()+why+
+        '<div class="acts"><button type="button" class="b1" id="fix">Move Priya to Thu Jan '+SWAP+' and post</button>'+
+        '<button type="button" class="b2" id="asis">Keep as drafted</button></div>';
+    }
+    if(s.step==="reason"){
+      return head+evidence()+
+        '<div class="reason"><label for="why">Why can Priya work Wed Jan '+FLAG+'?</label>'+
+        '<textarea id="why">'+esc(s.reason)+'</textarea>'+
+        '<small>Nightingale keeps your answer for the next schedule.</small>'+
+        '<div class="acts"><button type="button" class="b1" id="send" disabled>Post January</button><button type="button" class="b2" id="cancel">Cancel</button></div></div>';
+    }
+    if(s.step==="sent"){
+      return head+evidence()+
+        '<div class="done"><span class="chip">Posted as drafted · January · Erin</span><q>'+esc(s.reason)+'</q></div>';
+    }
+    return '<div class="done"><span class="chip">Posted · January · Erin</span>'+
+      '<span>Priya works Thu Jan '+SWAP+' and Jordan takes Wed Jan '+FLAG+'. '+(weekCounts(priya())[0]===jordan().length?'Each still works '+jordan().length+' nights that week.':'')+'</span></div>';
+  }
+  function nowHTML(){
+    if(s.step==="sent") return ['bad','<b>Wrong:</b> Priya’s note rules out Wednesdays until Jan '+END+'. Jan '+FLAG+' now needs a swap after posting.'];
+    if(s.step==="fixed"){var c=clash(priya()).length; return ['ok','<b>Fixed:</b> Priya has '+(c===0?'no':c)+' Monday or Wednesday nights Jan '+START+' to '+END+'.'];}
+    return ['','One limit sits in a note, not her availability. Check it before the schedule posts.'];
+  }
+  function render(){
+    $("cals").innerHTML = calsHTML();
+    $("check").innerHTML = checkHTML();
+    $("check").className = "check"+(s.step==="fixed"?" closed":"");
+    $("tasksub").textContent = (s.step==="sent"||s.step==="fixed") ? "Nightingale drafted it Dec 3. Posted." : "Nightingale drafted it Dec 3. Not posted yet.";
+    var n = nowHTML(); $("now").className = "now "+n[0]; $("now").innerHTML = '<p>'+n[1]+'</p>';
+    $("undo").disabled = hist.length===0;
+    var b;
+    if((b=$("fix"))) b.onclick=function(){go({step:"fixed",reason:""});};
+    if((b=$("asis"))) b.onclick=function(){go({step:"reason",reason:""});};
+    if((b=$("cancel"))) b.onclick=function(){go({step:"open",reason:""});};
+    var t=$("why");
+    if(t){
+      var send=$("send");
+      var upd=function(){s.reason=t.value; send.disabled=t.value.trim().length<10;};
+      t.oninput=upd; upd();
+      send.onclick=function(){if(t.value.trim().length>=10) go({step:"sent",reason:t.value.trim()});};
+    }
+  }
+  $("undo").onclick=function(){if(hist.length){s=hist.pop(); render();}};
+  $("reset").onclick=function(){hist=[]; s=JSON.parse(JSON.stringify(S0)); render();};
+  render();
+})();
+</script>
+</body>
+</html>
